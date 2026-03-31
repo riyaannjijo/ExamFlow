@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExamFlow — Online Examination System</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ─── SPLASH / LOGIN ─── -->
+<div id="page-auth" class="page active">
+  <div class="auth-left">
+    <div class="brand">
+      <div class="brand-icon">⬡</div>
+      <span class="brand-name">ExamFlow</span>
+    </div>
+    <h1 class="hero-heading">Knowledge<br><em>tested,</em><br>growth <span class="accent-dot">•</span><br>measured.</h1>
+    <p class="hero-sub">A streamlined online examination platform for supervisors and students.</p>
+    <div class="stat-row">
+      <div class="stat"><span class="stat-num">2</span><span class="stat-label">Roles</span></div>
+      <div class="stat"><span class="stat-num">∞</span><span class="stat-label">Quizzes</span></div>
+      <div class="stat"><span class="stat-num">100%</span><span class="stat-label">Tracked</span></div>
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="tab-switcher">
+      <button class="tab active" data-tab="login">Login</button>
+      <button class="tab" data-tab="signup">Sign Up</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="tab-login" class="tab-panel active">
+      <h2>Welcome back</h2>
+      <p class="form-sub">Enter your credentials to continue</p>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="login-email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-wrap">
+          <input type="password" id="login-password" placeholder="••••••••">
+          <button class="eye-btn" onclick="togglePwd('login-password', this)">👁</button>
+        </div>
+      </div>
+      <div id="login-error" class="error-msg hidden"></div>
+      <button class="btn-primary" onclick="handleLogin()">Login →</button>
+      <div class="demo-row">
+        <span>Demo:</span>
+        <button class="demo-chip" onclick="fillDemo('student')">Student</button>
+        <button class="demo-chip" onclick="fillDemo('supervisor')">Supervisor</button>
+      </div>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div id="tab-signup" class="tab-panel">
+      <h2>Create account</h2>
+      <p class="form-sub">Join the platform today</p>
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" id="su-fname" placeholder="Riya">
+        </div>
+        <div class="form-group">
+          <label>Middle Name</label>
+          <input type="text" id="su-mname" placeholder="(optional)">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Last Name</label>
+        <input type="text" id="su-lname" placeholder="Ann">
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="su-email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="su-password" placeholder="••••••••">
+      </div>
+      <div class="form-group">
+        <label>Role</label>
+        <div class="role-picker">
+          <label class="role-card selected" id="role-student">
+            <input type="radio" name="role" value="student" checked>
+            <span class="role-icon">🎓</span>
+            <span>Student</span>
+          </label>
+          <label class="role-card" id="role-supervisor">
+            <input type="radio" name="role" value="supervisor">
+            <span class="role-icon">🏫</span>
+            <span>Supervisor</span>
+          </label>
+        </div>
+      </div>
+      <div id="signup-error" class="error-msg hidden"></div>
+      <div id="signup-success" class="success-msg hidden"></div>
+      <button class="btn-primary" onclick="handleSignup()">Create Account →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── STUDENT DASHBOARD ─── -->
+<div id="page-student" class="page">
+  <nav class="topnav">
+    <div class="nav-brand">⬡ ExamFlow</div>
+    <div class="nav-user">
+      <span id="student-greeting" class="nav-greeting"></span>
+      <span class="role-badge student">Student</span>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="dashboard-body">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <button class="sidebar-item active" data-target="s-quizzes" onclick="switchSidebar(this, 'student')">
+        <span class="si-icon">📋</span> Available Quizzes
+      </button>
+      <button class="sidebar-item" data-target="s-results" onclick="switchSidebar(this, 'student')">
+        <span class="si-icon">📊</span> My Results
+      </button>
+    </aside>
+
+    <main class="dash-main">
+      <!-- QUIZZES PANEL -->
+      <section id="s-quizzes" class="dash-panel active">
+        <div class="panel-header">
+          <h2>Available Quizzes</h2>
+          <span class="panel-sub">Pick a quiz to get started</span>
+        </div>
+        <div id="quiz-grid" class="quiz-grid"></div>
+      </section>
+
+      <!-- QUIZ TAKING PANEL -->
+      <section id="s-taking" class="dash-panel">
+        <div class="panel-header" style="margin-bottom:0;">
+          <button class="btn-back" onclick="backToQuizList()">← Back</button>
+          <div>
+            <h2 id="taking-title"></h2>
+            <div class="progress-info">
+              Question <span id="q-current">1</span> of <span id="q-total">0</span>
+            </div>
+          </div>
+        </div>
+        <div class="progress-bar-wrap"><div id="progress-bar" class="progress-bar"></div></div>
+
+        <div id="question-card" class="question-card">
+          <p id="q-text" class="q-text"></p>
+          <div id="options-wrap" class="options-wrap"></div>
+        </div>
+
+        <div class="quiz-nav">
+          <button id="btn-prev" class="btn-secondary" onclick="prevQuestion()" disabled>← Prev</button>
+          <button id="btn-next" class="btn-primary" onclick="nextQuestion()">Next →</button>
+          <button id="btn-submit" class="btn-primary hidden" onclick="submitQuiz()">Submit Quiz ✓</button>
+        </div>
+      </section>
+
+      <!-- RESULTS PANEL -->
+      <section id="s-results" class="dash-panel">
+        <div class="panel-header">
+          <h2>My Results</h2>
+          <span class="panel-sub">Your exam history</span>
+        </div>
+        <div id="results-grid" class="results-grid"></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- ─── SUPERVISOR DASHBOARD ─── -->
+<div id="page-supervisor" class="page">
+  <nav class="topnav">
+    <div class="nav-brand">⬡ ExamFlow</div>
+    <div class="nav-user">
+      <span id="supervisor-greeting" class="nav-greeting"></span>
+      <span class="role-badge supervisor">Supervisor</span>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="dashboard-body">
+    <aside class="sidebar">
+      <button class="sidebar-item active" data-target="sv-quizzes" onclick="switchSidebar(this, 'supervisor')">
+        <span class="si-icon">📋</span> My Quizzes
+      </button>
+      <button class="sidebar-item" data-target="sv-create" onclick="switchSidebar(this, 'supervisor')">
+        <span class="si-icon">✏️</span> Create Quiz
+      </button>
+      <button class="sidebar-item" data-target="sv-results" onclick="switchSidebar(this, 'supervisor')">
+        <span class="si-icon">📊</span> View Results
+      </button>
+    </aside>
+
+    <main class="dash-main">
+      <!-- MY QUIZZES -->
+      <section id="sv-quizzes" class="dash-panel active">
+        <div class="panel-header">
+          <h2>My Quizzes</h2>
+          <span class="panel-sub">Quizzes you have created</span>
+        </div>
+        <div id="sv-quiz-grid" class="quiz-grid"></div>
+      </section>
+
+      <!-- CREATE QUIZ -->
+      <section id="sv-create" class="dash-panel">
+        <div class="panel-header">
+          <h2>Create New Quiz</h2>
+          <span class="panel-sub">Build a quiz for your students</span>
+        </div>
+
+        <div class="create-form">
+          <div class="form-group">
+            <label>Quiz Name</label>
+            <input type="text" id="sv-qname" placeholder="e.g. C Programming Basics">
+          </div>
+          <div class="form-group" style="max-width:200px;">
+            <label>Total Marks</label>
+            <input type="number" id="sv-qmarks" placeholder="10" min="1">
+          </div>
+
+          <div id="questions-builder" class="questions-builder">
+            <div class="qb-header">
+              <h3>Questions</h3>
+              <button class="btn-add-q" onclick="addQuestionBlock()">+ Add Question</button>
+            </div>
+            <div id="q-blocks"></div>
+          </div>
+
+          <div id="create-error" class="error-msg hidden"></div>
+          <div id="create-success" class="success-msg hidden"></div>
+          <button class="btn-primary" onclick="createQuiz()">Publish Quiz →</button>
+        </div>
+      </section>
+
+      <!-- VIEW RESULTS -->
+      <section id="sv-results" class="dash-panel">
+        <div class="panel-header">
+          <h2>Quiz Results</h2>
+          <span class="panel-sub">Select a quiz to see student performance</span>
+        </div>
+        <div class="form-group" style="max-width:360px; margin-bottom:24px;">
+          <label>Select Quiz</label>
+          <select id="sv-result-picker" onchange="loadSupervisorResults()">
+            <option value="">— Choose a quiz —</option>
+          </select>
+        </div>
+        <div id="sv-results-table-wrap"></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- ─── RESULT MODAL ─── -->
+<div id="result-modal" class="modal hidden">
+  <div class="modal-box">
+    <div id="modal-icon" class="modal-icon"></div>
+    <h2 id="modal-title"></h2>
+    <p id="modal-score" class="modal-score"></p>
+    <p id="modal-status" class="modal-badge"></p>
+    <button class="btn-primary" onclick="closeModal()">Back to Dashboard</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
