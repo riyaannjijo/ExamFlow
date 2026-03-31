@@ -5,7 +5,7 @@
    All data goes to/from MySQL via api.py on http://localhost:5000
    ================================================================ */
 
-const API = 'http://localhost:5000';
+const API = 'https://examflow-h2gx.onrender.com';
 
 async function apiFetch(path, method = 'GET', body = null) {
   try {
